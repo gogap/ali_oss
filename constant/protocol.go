@@ -15,5 +15,5 @@ const (
 )
 
 const (
-	EXPIRES = 100 * 365 * 24 * 60 * 60 //100 year
+	EXPIRES = 86400 // one day
 )
