@@ -17,3 +17,8 @@ const (
 const (
 	EXPIRES = 86400 // one day
 )
+
+const (
+	MAX_IMAGE_WIDTH  = 4096
+	MAX_IMAGE_HEIGHT = 4096
+)
