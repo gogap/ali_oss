@@ -53,22 +53,37 @@ func (p *client) GetObjectURL(location, bucketName, objectName string) (URL stri
 }
 
 func (p *client) GetStaticWidthObjectURL(location, bucketName, objectName string, width int64) (URL string) {
-	// resource := fmt.Sprintf("/%s/%s", bucketName, objectName)
-	// signature := p.signer.HeaderSign(constant.GET, constant.EXPIRES+time.Now().Unix(), resource, p.creds)
-	// rawURL := fmt.Sprintf("http://%s.oss-cn-%s.aliyuncs.com/%s?Expires=%d&OSSAccessKeyId=%s&Signature=%s",
-	// 	bucketName, location, objectName, constant.EXPIRES+time.Now().Unix(), p.creds.GetAccessKeyId(), signature)
-
-	return
+	resource := fmt.Sprintf("/%s/%s", bucketName, objectName)
+	signature := p.signer.HeaderSign(constant.GET, constant.EXPIRES+time.Now().Unix(), resource, p.creds)
+	rawURL := fmt.Sprintf("http://%s.oss-cn-%s.aliyuncs.com/%s@%dw.jpg?Expires=%d&OSSAccessKeyId=%s&Signature=%s",
+		bucketName, location, objectName, width, constant.EXPIRES+time.Now().Unix(), p.creds.GetAccessKeyId(), signature)
+	u, _ := url.Parse(rawURL)
+	return u.String()
 }
 
 func (p *client) GetStaticHeightObjectURL(location, bucketName, objectName string, height int64) (URL string) {
-	return
+	resource := fmt.Sprintf("/%s/%s", bucketName, objectName)
+	signature := p.signer.HeaderSign(constant.GET, constant.EXPIRES+time.Now().Unix(), resource, p.creds)
+	rawURL := fmt.Sprintf("http://%s.oss-cn-%s.aliyuncs.com/%s@%dh.jpg?Expires=%d&OSSAccessKeyId=%s&Signature=%s",
+		bucketName, location, objectName, height, constant.EXPIRES+time.Now().Unix(), p.creds.GetAccessKeyId(), signature)
+	u, _ := url.Parse(rawURL)
+	return u.String()
 }
 
 func (p *client) GetDynamicObjectURL(location, bucketName, objectName string, width, height int64) (URL string) {
-	return
+	resource := fmt.Sprintf("/%s/%s", bucketName, objectName)
+	signature := p.signer.HeaderSign(constant.GET, constant.EXPIRES+time.Now().Unix(), resource, p.creds)
+	rawURL := fmt.Sprintf("http://%s.oss-cn-%s.aliyuncs.com/%s@%dw_%dh.jpg?Expires=%d&OSSAccessKeyId=%s&Signature=%s",
+		bucketName, location, objectName, width, height, constant.EXPIRES+time.Now().Unix(), p.creds.GetAccessKeyId(), signature)
+	u, _ := url.Parse(rawURL)
+	return u.String()
 }
 
 func (p *client) GetProportionObjectURL(location, bucketName, objectName string, proportion int64) (URL string) {
-	return
+	resource := fmt.Sprintf("/%s/%s", bucketName, objectName)
+	signature := p.signer.HeaderSign(constant.GET, constant.EXPIRES+time.Now().Unix(), resource, p.creds)
+	rawURL := fmt.Sprintf("http://%s.oss-cn-%s.aliyuncs.com/%s@%dp.jpg?Expires=%d&OSSAccessKeyId=%s&Signature=%s",
+		bucketName, location, objectName, proportion, constant.EXPIRES+time.Now().Unix(), p.creds.GetAccessKeyId(), signature)
+	u, _ := url.Parse(rawURL)
+	return u.String()
 }
