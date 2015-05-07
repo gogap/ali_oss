@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"net/url"
 	"time"
 
 	"github.com/gogap/ali_oss/auth"
@@ -43,47 +42,33 @@ func (p *client) PutObject(location, bucketName, objectName string, file io.Read
 	return
 }
 
-func (p *client) GetObjectURL(location, bucketName, objectName string) (URL string) {
+func (p *client) getSignature(bucketName, objectName string) string {
 	resource := fmt.Sprintf("/%s/%s", bucketName, objectName)
-	signature := p.signer.HeaderSign(constant.GET, constant.EXPIRES+time.Now().Unix(), resource, p.creds)
-	rawURL := fmt.Sprintf("http://%s.oss-cn-%s.aliyuncs.com/%s?Expires=%d&OSSAccessKeyId=%s&Signature=%s",
-		bucketName, location, objectName, constant.EXPIRES+time.Now().Unix(), p.creds.GetAccessKeyId(), signature)
-	u, _ := url.Parse(rawURL)
-	return u.String()
+	return p.signer.HeaderSign(constant.GET, defaultExpires(), resource, p.creds)
 }
 
-func (p *client) GetStaticWidthObjectURL(location, bucketName, objectName string, width int64) (URL string) {
-	resource := fmt.Sprintf("/%s/%s", bucketName, objectName)
-	signature := p.signer.HeaderSign(constant.GET, constant.EXPIRES+time.Now().Unix(), resource, p.creds)
-	rawURL := fmt.Sprintf("http://%s.oss-cn-%s.aliyuncs.com/%s@%dw.jpg?Expires=%d&OSSAccessKeyId=%s&Signature=%s",
-		bucketName, location, objectName, width, constant.EXPIRES+time.Now().Unix(), p.creds.GetAccessKeyId(), signature)
-	u, _ := url.Parse(rawURL)
-	return u.String()
+func (p *client) GetObjectURL(location, bucketName, objectName string) (URL string) {
+	signature := p.getSignature(bucketName, objectName)
+	return fmt.Sprintf(constant.TPL_OBJECT_URL, bucketName, location, objectName, defaultExpires(), p.creds.GetAccessKeyId(), urlEncode(signature))
+}
+
+func (p *client) GetStaticWidthObjectURL(domain, bucketName, objectName string, width int64) (URL string) {
+	//signature := p.signer.HeaderSign(constant.GET, defaultExpires(), fmt.Sprintf(constant.TPL_STATIC_WIDTH_OBJECT, objectName, width), p.creds)
+	signature := p.getSignature(bucketName, fmt.Sprintf(constant.TPL_STATIC_WIDTH_OBJECT, objectName, width))
+	return fmt.Sprintf(constant.TPL_STATIC_WIDTH_OBJECT_URL, trimDomain(domain), objectName, urlEncode("@"), width, 1430982602, p.creds.GetAccessKeyId(), urlEncode(signature))
 }
 
 func (p *client) GetStaticHeightObjectURL(location, bucketName, objectName string, height int64) (URL string) {
-	resource := fmt.Sprintf("/%s/%s", bucketName, objectName)
-	signature := p.signer.HeaderSign(constant.GET, constant.EXPIRES+time.Now().Unix(), resource, p.creds)
-	rawURL := fmt.Sprintf("http://%s.oss-cn-%s.aliyuncs.com/%s@%dh.jpg?Expires=%d&OSSAccessKeyId=%s&Signature=%s",
-		bucketName, location, objectName, height, constant.EXPIRES+time.Now().Unix(), p.creds.GetAccessKeyId(), signature)
-	u, _ := url.Parse(rawURL)
-	return u.String()
+	signature := p.getSignature(bucketName, objectName)
+	return fmt.Sprintf(constant.TPL_STATIC_HEIGHT_OBJECT_URL, bucketName, location, objectName, height, defaultExpires(), p.creds.GetAccessKeyId(), urlEncode(signature))
 }
 
 func (p *client) GetDynamicObjectURL(location, bucketName, objectName string, width, height int64) (URL string) {
-	resource := fmt.Sprintf("/%s/%s", bucketName, objectName)
-	signature := p.signer.HeaderSign(constant.GET, constant.EXPIRES+time.Now().Unix(), resource, p.creds)
-	rawURL := fmt.Sprintf("http://%s.oss-cn-%s.aliyuncs.com/%s@%dw_%dh.jpg?Expires=%d&OSSAccessKeyId=%s&Signature=%s",
-		bucketName, location, objectName, width, height, constant.EXPIRES+time.Now().Unix(), p.creds.GetAccessKeyId(), signature)
-	u, _ := url.Parse(rawURL)
-	return u.String()
+	signature := p.getSignature(bucketName, objectName)
+	return fmt.Sprintf(constant.TPL_DYNAMIC_OBJECT_URL, bucketName, location, objectName, width, height, defaultExpires(), p.creds.GetAccessKeyId(), urlEncode(signature))
 }
 
 func (p *client) GetProportionObjectURL(location, bucketName, objectName string, proportion int64) (URL string) {
-	resource := fmt.Sprintf("/%s/%s", bucketName, objectName)
-	signature := p.signer.HeaderSign(constant.GET, constant.EXPIRES+time.Now().Unix(), resource, p.creds)
-	rawURL := fmt.Sprintf("http://%s.oss-cn-%s.aliyuncs.com/%s@%dp.jpg?Expires=%d&OSSAccessKeyId=%s&Signature=%s",
-		bucketName, location, objectName, proportion, constant.EXPIRES+time.Now().Unix(), p.creds.GetAccessKeyId(), signature)
-	u, _ := url.Parse(rawURL)
-	return u.String()
+	signature := p.getSignature(bucketName, objectName)
+	return fmt.Sprintf(constant.TPL_PROPORTION_OBJECT_URL, bucketName, location, objectName, proportion, defaultExpires(), p.creds.GetAccessKeyId(), urlEncode(signature))
 }

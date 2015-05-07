@@ -9,10 +9,6 @@ import (
 	"github.com/gogap/ali_oss"
 )
 
-const (
-	BEIJING = "beijing"
-)
-
 var cfg config
 
 func init() {
@@ -32,6 +28,7 @@ func init() {
 }
 
 func main() {
+	// putObject()
 	getObject()
 }
 
@@ -43,7 +40,7 @@ func putObject() {
 	}
 	defer f.Close()
 	cli := ali_oss.NewClient(cfg.AccessKeyId, cfg.SecretAccessKey)
-	err = cli.PutObject(cfg.Location, cfg.BucketName, "keys/a", f)
+	err = cli.PutObject(cfg.Location, cfg.BucketName, "test1", f)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -53,10 +50,15 @@ func putObject() {
 func getObject() {
 	cli := ali_oss.NewClient(cfg.AccessKeyId, cfg.SecretAccessKey)
 	url := cli.GetObjectURL(cfg.Location, cfg.BucketName, "test1")
-	fmt.Println(url)
+	fmt.Println("default url:", url)
+
+	width := cli.GetStaticWidthObjectURL(cfg.Domain, cfg.BucketName, "test1", 100)
+	fmt.Println("static width:", width)
+
 }
 
 type config struct {
+	Domain          string `json:"domain"`
 	Location        string `json:"location"`
 	BucketName      string `json:"bucket_name"`
 	AccessKeyId     string `json:"access_key_id"`
