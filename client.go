@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"net/url"
 	"time"
 
 	"github.com/gogap/ali_oss/auth"
@@ -43,32 +42,40 @@ func (p *client) PutObject(location, bucketName, objectName string, file io.Read
 	return
 }
 
-func (p *client) GetObjectURL(location, bucketName, objectName string) (URL string) {
+func (p *client) getSignature(bucketName, objectName string) string {
 	resource := fmt.Sprintf("/%s/%s", bucketName, objectName)
-	signature := p.signer.HeaderSign(constant.GET, constant.EXPIRES+time.Now().Unix(), resource, p.creds)
-	rawURL := fmt.Sprintf("http://%s.oss-cn-%s.aliyuncs.com/%s?Expires=%d&OSSAccessKeyId=%s&Signature=%s",
-		bucketName, location, objectName, constant.EXPIRES+time.Now().Unix(), p.creds.GetAccessKeyId(), signature)
-	u, _ := url.Parse(rawURL)
-	return u.String()
+	return p.signer.HeaderSign(constant.GET, defaultExpires(), resource, p.creds)
 }
 
-func (p *client) GetStaticWidthObjectURL(location, bucketName, objectName string, width int64) (URL string) {
-	// resource := fmt.Sprintf("/%s/%s", bucketName, objectName)
-	// signature := p.signer.HeaderSign(constant.GET, constant.EXPIRES+time.Now().Unix(), resource, p.creds)
-	// rawURL := fmt.Sprintf("http://%s.oss-cn-%s.aliyuncs.com/%s?Expires=%d&OSSAccessKeyId=%s&Signature=%s",
-	// 	bucketName, location, objectName, constant.EXPIRES+time.Now().Unix(), p.creds.GetAccessKeyId(), signature)
-
-	return
+func (p *client) GetObjectURL(location, bucketName, objectName string) (URL string) {
+	signature := p.getSignature(bucketName, objectName)
+	return fmt.Sprintf(constant.TPL_OBJECT_URL, bucketName, location, objectName, defaultExpires(), p.creds.GetAccessKeyId(), urlEncode(signature))
 }
 
-func (p *client) GetStaticHeightObjectURL(location, bucketName, objectName string, height int64) (URL string) {
-	return
+func (p *client) GetObjectURLWithWatermark(domain, bucketName, objectName, watermark string) (URL string) {
+	//watermarke：不能以中文开头，避免使用负担，默认在前面加一个空格
+	watermark = " " + watermark
+	resource := fmt.Sprintf("%s@watermark=2&s=30&text=%s", objectName, base64String(watermark))
+	signature := p.getSignature(bucketName, resource)
+	return fmt.Sprintf(constant.TPL_OBJECT_WITH_WATERMARK_URL, trimDomain(domain), resource, defaultExpires(), p.creds.GetAccessKeyId(), urlEncode(signature))
 }
 
-func (p *client) GetDynamicObjectURL(location, bucketName, objectName string, width, height int64) (URL string) {
-	return
+func (p *client) GetStaticWidthObjectURL(domain, bucketName, objectName string, width int64) (URL string) {
+	signature := p.getSignature(bucketName, fmt.Sprintf(constant.TPL_STATIC_WIDTH_OBJECT, objectName, width))
+	return fmt.Sprintf(constant.TPL_STATIC_WIDTH_OBJECT_URL, trimDomain(domain), objectName, urlEncode("@"), width, defaultExpires(), p.creds.GetAccessKeyId(), urlEncode(signature))
 }
 
-func (p *client) GetProportionObjectURL(location, bucketName, objectName string, proportion int64) (URL string) {
-	return
+func (p *client) GetStaticHeightObjectURL(domain, bucketName, objectName string, height int64) (URL string) {
+	signature := p.getSignature(bucketName, fmt.Sprintf(constant.TPL_STATIC_HEIGHT_OBJECT, objectName, height))
+	return fmt.Sprintf(constant.TPL_STATIC_HEIGHT_OBJECT_URL, trimDomain(domain), objectName, urlEncode("@"), height, defaultExpires(), p.creds.GetAccessKeyId(), urlEncode(signature))
+}
+
+func (p *client) GetDynamicObjectURL(domain, bucketName, objectName string, width, height int64) (URL string) {
+	signature := p.getSignature(bucketName, fmt.Sprintf(constant.TPL_DYNAMIC_OBJEC, objectName, width, height))
+	return fmt.Sprintf(constant.TPL_DYNAMIC_OBJECT_URL, trimDomain(domain), objectName, urlEncode("@"), width, height, defaultExpires(), p.creds.GetAccessKeyId(), urlEncode(signature))
+}
+
+func (p *client) GetProportionObjectURL(domain, bucketName, objectName string, proportion int64) (URL string) {
+	signature := p.getSignature(bucketName, fmt.Sprintf(constant.TPL_PROPORTION_OBJECT, objectName, proportion))
+	return fmt.Sprintf(constant.TPL_PROPORTION_OBJECT_URL, trimDomain(domain), objectName, urlEncode("@"), proportion, defaultExpires(), p.creds.GetAccessKeyId(), urlEncode(signature))
 }
