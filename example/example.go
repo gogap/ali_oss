@@ -28,19 +28,19 @@ func init() {
 }
 
 func main() {
-	// putObject()
+	putObject()
 	getObject()
 }
 
 func putObject() {
-	f, err := os.Open("test.png")
+	f, err := os.Open("testdata/test.png")
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 	defer f.Close()
 	cli := ali_oss.NewClient(cfg.AccessKeyId, cfg.SecretAccessKey)
-	err = cli.PutObject(cfg.Location, cfg.BucketName, "test1", f)
+	err = cli.PutObject(cfg.Location, cfg.BucketName, "testdata/test1", f)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -70,7 +70,7 @@ func getObject() {
 	//fmt.Println("proportion object url:", proportion)
 
 	//get default watermark url
-	watermark := cli.GetObjectURLWithWatermark(cfg.Domain, cfg.BucketName, "test1", "日日进")
+	watermark := cli.GetObjectURLWithWatermark(cfg.Domain, cfg.BucketName, "testdata/test1", "日日进")
 	fmt.Println("default watermark url:", watermark)
 
 }
