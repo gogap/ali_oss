@@ -1,6 +1,7 @@
 package ali_oss
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"net/url"
@@ -30,4 +31,8 @@ func urlEncode(s string) string {
 
 func trimDomain(domain string) string {
 	return strings.TrimSuffix(strings.TrimSuffix(domain, " "), "/")
+}
+
+func base64String(s string) string {
+	return base64.StdEncoding.EncodeToString([]byte(s))
 }

@@ -71,7 +71,6 @@ func (p *requestSigner) Sign(method string, headers map[string]string, resource 
 
 func (p *requestSigner) HeaderSign(method string, expires int64, resource string, creds Credentials) string {
 	stringToSign := fmt.Sprintf("%s\n\n\n%d\n%s", method, expires, resource)
-	fmt.Println(stringToSign)
 	sha1Hash := hmac.New(sha1.New, []byte(creds.GetSecretAccessKey()))
 	sha1Hash.Write([]byte(stringToSign))
 	return base64.StdEncoding.EncodeToString(sha1Hash.Sum(nil))

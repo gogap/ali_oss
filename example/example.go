@@ -48,12 +48,30 @@ func putObject() {
 }
 
 func getObject() {
+	//get default url
 	cli := ali_oss.NewClient(cfg.AccessKeyId, cfg.SecretAccessKey)
-	url := cli.GetObjectURL(cfg.Location, cfg.BucketName, "test1")
-	fmt.Println("default url:", url)
+	// url := cli.GetObjectURL(cfg.Location, cfg.BucketName, "test1")
+	// fmt.Println("default url:", url)
 
-	width := cli.GetStaticWidthObjectURL(cfg.Domain, cfg.BucketName, "test1", 100)
-	fmt.Println("static width:", width)
+	//get static width
+	// width := cli.GetStaticWidthObjectURL(cfg.Domain, cfg.BucketName, "test1", 200)
+	// fmt.Println("static width:", width)
+
+	//get static height
+	//height := cli.GetStaticHeightObjectURL(cfg.Domain, cfg.BucketName, "test1", 200)
+	//fmt.Println("static height:", height)
+
+	//get dynamic object url
+	//dynamic := cli.GetDynamicObjectURL(cfg.Domain, cfg.BucketName, "test1", 80, 120)
+	//fmt.Println("dynamic object url:", dynamic)
+
+	//get proportion object url
+	//proportion := cli.GetProportionObjectURL(cfg.Domain, cfg.BucketName, "test1", 300)
+	//fmt.Println("proportion object url:", proportion)
+
+	//get default watermark url
+	watermark := cli.GetObjectURLWithWatermark(cfg.Domain, cfg.BucketName, "test1", "1日日进")
+	fmt.Println("default watermark url:", watermark)
 
 }
 

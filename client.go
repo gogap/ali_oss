@@ -52,23 +52,29 @@ func (p *client) GetObjectURL(location, bucketName, objectName string) (URL stri
 	return fmt.Sprintf(constant.TPL_OBJECT_URL, bucketName, location, objectName, defaultExpires(), p.creds.GetAccessKeyId(), urlEncode(signature))
 }
 
+func (p *client) GetObjectURLWithWatermark(domain, bucketName, objectName, watermark string) (URL string) {
+	//watermarke：不能以中文开头，避免使用负担，默认在前面加一个空格
+	watermark = " " + watermark
+	signature := p.getSignature(bucketName, fmt.Sprintf("%s@watermark=2&text=%s", objectName, base64String(watermark)))
+	return fmt.Sprintf(constant.TPL_OBJECT_WITH_WATERMARK_URL, trimDomain(domain), fmt.Sprintf("%s@watermark=2&text=%s", objectName, base64String(watermark)), defaultExpires(), p.creds.GetAccessKeyId(), urlEncode(signature))
+}
+
 func (p *client) GetStaticWidthObjectURL(domain, bucketName, objectName string, width int64) (URL string) {
-	//signature := p.signer.HeaderSign(constant.GET, defaultExpires(), fmt.Sprintf(constant.TPL_STATIC_WIDTH_OBJECT, objectName, width), p.creds)
 	signature := p.getSignature(bucketName, fmt.Sprintf(constant.TPL_STATIC_WIDTH_OBJECT, objectName, width))
-	return fmt.Sprintf(constant.TPL_STATIC_WIDTH_OBJECT_URL, trimDomain(domain), objectName, urlEncode("@"), width, 1430982602, p.creds.GetAccessKeyId(), urlEncode(signature))
+	return fmt.Sprintf(constant.TPL_STATIC_WIDTH_OBJECT_URL, trimDomain(domain), objectName, urlEncode("@"), width, defaultExpires(), p.creds.GetAccessKeyId(), urlEncode(signature))
 }
 
-func (p *client) GetStaticHeightObjectURL(location, bucketName, objectName string, height int64) (URL string) {
-	signature := p.getSignature(bucketName, objectName)
-	return fmt.Sprintf(constant.TPL_STATIC_HEIGHT_OBJECT_URL, bucketName, location, objectName, height, defaultExpires(), p.creds.GetAccessKeyId(), urlEncode(signature))
+func (p *client) GetStaticHeightObjectURL(domain, bucketName, objectName string, height int64) (URL string) {
+	signature := p.getSignature(bucketName, fmt.Sprintf(constant.TPL_STATIC_HEIGHT_OBJECT, objectName, height))
+	return fmt.Sprintf(constant.TPL_STATIC_HEIGHT_OBJECT_URL, trimDomain(domain), objectName, urlEncode("@"), height, defaultExpires(), p.creds.GetAccessKeyId(), urlEncode(signature))
 }
 
-func (p *client) GetDynamicObjectURL(location, bucketName, objectName string, width, height int64) (URL string) {
-	signature := p.getSignature(bucketName, objectName)
-	return fmt.Sprintf(constant.TPL_DYNAMIC_OBJECT_URL, bucketName, location, objectName, width, height, defaultExpires(), p.creds.GetAccessKeyId(), urlEncode(signature))
+func (p *client) GetDynamicObjectURL(domain, bucketName, objectName string, width, height int64) (URL string) {
+	signature := p.getSignature(bucketName, fmt.Sprintf(constant.TPL_DYNAMIC_OBJEC, objectName, width, height))
+	return fmt.Sprintf(constant.TPL_DYNAMIC_OBJECT_URL, trimDomain(domain), objectName, urlEncode("@"), width, height, defaultExpires(), p.creds.GetAccessKeyId(), urlEncode(signature))
 }
 
-func (p *client) GetProportionObjectURL(location, bucketName, objectName string, proportion int64) (URL string) {
-	signature := p.getSignature(bucketName, objectName)
-	return fmt.Sprintf(constant.TPL_PROPORTION_OBJECT_URL, bucketName, location, objectName, proportion, defaultExpires(), p.creds.GetAccessKeyId(), urlEncode(signature))
+func (p *client) GetProportionObjectURL(domain, bucketName, objectName string, proportion int64) (URL string) {
+	signature := p.getSignature(bucketName, fmt.Sprintf(constant.TPL_PROPORTION_OBJECT, objectName, proportion))
+	return fmt.Sprintf(constant.TPL_PROPORTION_OBJECT_URL, trimDomain(domain), objectName, urlEncode("@"), proportion, defaultExpires(), p.creds.GetAccessKeyId(), urlEncode(signature))
 }
