@@ -55,8 +55,9 @@ func (p *client) GetObjectURL(location, bucketName, objectName string) (URL stri
 func (p *client) GetObjectURLWithWatermark(domain, bucketName, objectName, watermark string) (URL string) {
 	//watermarke：不能以中文开头，避免使用负担，默认在前面加一个空格
 	watermark = " " + watermark
-	signature := p.getSignature(bucketName, fmt.Sprintf("%s@watermark=2&text=%s", objectName, base64String(watermark)))
-	return fmt.Sprintf(constant.TPL_OBJECT_WITH_WATERMARK_URL, trimDomain(domain), fmt.Sprintf("%s@watermark=2&text=%s", objectName, base64String(watermark)), defaultExpires(), p.creds.GetAccessKeyId(), urlEncode(signature))
+	resource := fmt.Sprintf("%s@watermark=2&s=30&text=%s", objectName, base64String(watermark))
+	signature := p.getSignature(bucketName, resource)
+	return fmt.Sprintf(constant.TPL_OBJECT_WITH_WATERMARK_URL, trimDomain(domain), resource, defaultExpires(), p.creds.GetAccessKeyId(), urlEncode(signature))
 }
 
 func (p *client) GetStaticWidthObjectURL(domain, bucketName, objectName string, width int64) (URL string) {

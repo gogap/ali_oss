@@ -36,3 +36,7 @@ const (
 
 	TPL_OBJECT_WITH_WATERMARK_URL = "http://%s/%s?Expires=%d&OSSAccessKeyId=%s&Signature=%s"
 )
+
+const (
+	COLOR_WHITE = "#FFFFFF"
+)
