@@ -60,7 +60,6 @@ func (p *requestSigner) Sign(method string, headers map[string]string, resource 
 		date + "\n" +
 		xossHeader +
 		resource
-
 	sha1Hash := hmac.New(sha1.New, []byte(creds.GetSecretAccessKey()))
 	if _, err = sha1Hash.Write([]byte(stringToSign)); err != nil {
 		return

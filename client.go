@@ -4,11 +4,13 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/gogap/ali_oss/auth"
 	"github.com/gogap/ali_oss/comm"
 	"github.com/gogap/ali_oss/constant"
+	"github.com/gogap/ali_oss/parser"
 )
 
 type client struct {
@@ -38,13 +40,49 @@ func (p *client) PutObject(location, bucketName, objectName string, file io.Read
 		return
 	}
 	header[constant.AUTHORIZATION] = fmt.Sprintf("%s %s:%s", constant.OSS, p.creds.GetAccessKeyId(), signature)
-	err = p.requester.Request(constant.PUT, target, header, file, p.creds)
+	err = p.requester.Request(constant.PUT, target, header, file, nil, p.creds)
 	return
 }
 
 func (p *client) getSignature(bucketName, objectName string) string {
 	resource := fmt.Sprintf("/%s/%s", bucketName, objectName)
 	return p.signer.HeaderSign(constant.GET, defaultExpires(), resource, p.creds)
+}
+
+func (p *client) parseFilter(filter map[string]string) string {
+	var params string
+	if filter["delimiter"] != "" {
+		params = fmt.Sprintf("delimiter=%s&", filter["delimiter"])
+	}
+	if filter["marker"] != "" {
+		params = fmt.Sprintf("marker=%s&", filter["marker"])
+	}
+	if filter["max-keys"] != "" {
+		params = fmt.Sprintf("max-keys=%s&", filter["max-keys"])
+	}
+	if filter["prefix"] != "" {
+		params = fmt.Sprintf("prefix=%s&", filter["prefix"])
+	}
+	params = strings.TrimSuffix(params, "&")
+	if params != "" {
+		params = "?" + params
+	}
+	return params
+}
+func (p *client) GetBucket(filter map[string]string, bucketName, location string) (result parser.ListBucketResult, err error) {
+	header := make(map[string]string)
+	params := p.parseFilter(filter)
+	target := fmt.Sprintf("http://%s.oss-cn-%s.aliyuncs.com%s", bucketName, location, params)
+
+	date := time.Now().UTC().Format(http.TimeFormat)
+	header[constant.DATE] = date
+	signature, err := p.signer.Sign(constant.GET, header, "/"+strings.TrimSuffix(bucketName, "/")+"/", p.creds)
+	if err != nil {
+		return
+	}
+	header[constant.AUTHORIZATION] = fmt.Sprintf("%s %s:%s", constant.OSS, p.creds.GetAccessKeyId(), signature)
+	err = p.requester.Request(constant.GET, target, header, nil, &result, p.creds)
+	return
 }
 
 func (p *client) GetObjectURL(location, bucketName, objectName string) (URL string) {
@@ -57,7 +95,8 @@ func (p *client) GetObjectURLWithWatermark(domain, bucketName, objectName, water
 	watermark = " " + watermark
 	resource := fmt.Sprintf("%s@watermark=2&s=30&text=%s", objectName, base64String(watermark))
 	signature := p.getSignature(bucketName, resource)
-	return fmt.Sprintf(constant.TPL_OBJECT_WITH_WATERMARK_URL, trimDomain(domain), resource, defaultExpires(), p.creds.GetAccessKeyId(), urlEncode(signature))
+	resourceUrl := fmt.Sprintf("%s@watermark=2&s=30&text=%s", objectName, urlEncode(base64String(watermark)))
+	return fmt.Sprintf(constant.TPL_OBJECT_WITH_WATERMARK_URL, trimDomain(domain), resourceUrl, defaultExpires(), p.creds.GetAccessKeyId(), urlEncode(signature))
 }
 
 func (p *client) GetStaticWidthObjectURL(domain, bucketName, objectName string, width int64) (URL string) {

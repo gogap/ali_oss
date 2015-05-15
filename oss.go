@@ -2,6 +2,8 @@ package ali_oss
 
 import (
 	"io"
+
+	"github.com/gogap/ali_oss/parser"
 )
 
 type OSS interface {
@@ -19,4 +21,6 @@ type OSS interface {
 	GetProportionObjectURL(domain, bucketName, objectName string, proportion int64) (URL string)
 	//获取含有水印的授权对象访问地址
 	GetObjectURLWithWatermark(domain, bucketName, objectName, watermark string) (URL string)
+	//获取object list
+	GetBucket(filter map[string]string, bucketName, location string) (result parser.ListBucketResult, err error)
 }

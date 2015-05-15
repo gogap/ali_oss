@@ -8,11 +8,10 @@ import (
 	"net/http"
 
 	"github.com/gogap/ali_oss/auth"
-	"github.com/gogap/ali_oss/parser"
 )
 
 type Requester interface {
-	Request(method, target string, header map[string]string, content io.Reader, creds auth.Credentials) (err error)
+	Request(method, target string, header map[string]string, content io.Reader, result interface{}, creds auth.Credentials) (err error)
 }
 
 func DefaultRequester() Requester {
@@ -21,7 +20,7 @@ func DefaultRequester() Requester {
 
 type request struct{}
 
-func (p *request) Request(method, target string, header map[string]string, content io.Reader, creds auth.Credentials) (err error) {
+func (p *request) Request(method, target string, header map[string]string, content io.Reader, result interface{}, creds auth.Credentials) (err error) {
 	client := &http.Client{}
 	req, err := http.NewRequest(method, target, content)
 	if err != nil {
@@ -34,19 +33,19 @@ func (p *request) Request(method, target string, header map[string]string, conte
 	if err != nil {
 		return
 	}
-	if resp.StatusCode != 200 {
-		var data []byte
+	var data []byte
+	data, err = ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return
+	}
 
-		data, err = ioutil.ReadAll(resp.Body)
-		if err != nil {
-			return
-		}
-		var result parser.ErrorMessageResponse
+	if resp.StatusCode == 200 && len(data) > 0 {
 		err = xml.Unmarshal(data, &result)
 		if err != nil {
 			return
 		}
-		return errors.New(result.Code + ":" + result.Message)
+	} else {
+		err = errors.New(string(data))
 	}
 	return
 }

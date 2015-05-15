@@ -29,13 +29,14 @@ func init() {
 
 func main() {
 	putObject()
-	getObject()
+	// getObject()
+	// getBucket()
 }
 
 func putObject() {
 	f, err := os.Open("testdata/test.png")
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println("os err", err)
 		return
 	}
 	defer f.Close()
@@ -45,6 +46,18 @@ func putObject() {
 		fmt.Println(err)
 		return
 	}
+}
+
+func getBucket() {
+	cli := ali_oss.NewClient(cfg.AccessKeyId, cfg.SecretAccessKey)
+	var filter = make(map[string]string)
+	filter["prefix"] = "test"
+	result, err := cli.GetBucket(filter, cfg.BucketName, cfg.Location)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Println(result)
 }
 
 func getObject() {
