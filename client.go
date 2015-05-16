@@ -115,6 +115,9 @@ func (p *client) GetDynamicObjectURL(domain, bucketName, objectName string, widt
 }
 
 func (p *client) GetProportionObjectURL(domain, bucketName, objectName string, proportion int64) (URL string) {
+	if proportion == 0 {
+		proportion = 25
+	}
 	signature := p.getSignature(bucketName, fmt.Sprintf(constant.TPL_PROPORTION_OBJECT, objectName, proportion))
 	return fmt.Sprintf(constant.TPL_PROPORTION_OBJECT_URL, trimDomain(domain), objectName, urlEncode("@"), proportion, defaultExpires(), p.creds.GetAccessKeyId(), urlEncode(signature))
 }
