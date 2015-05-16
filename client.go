@@ -85,6 +85,10 @@ func (p *client) GetBucket(filter map[string]string, bucketName, location string
 	return
 }
 
+func (p *client) GetObjectBasicURL(location, bucketName, objectName string) (URL string) {
+	return fmt.Sprintf("http://%s.oss-cn-%s.aliyuncs.com/%s", bucketName, location, objectName)
+}
+
 func (p *client) GetObjectURL(location, bucketName, objectName string) (URL string) {
 	signature := p.getSignature(bucketName, objectName)
 	return fmt.Sprintf(constant.TPL_OBJECT_URL, bucketName, location, objectName, defaultExpires(), p.creds.GetAccessKeyId(), urlEncode(signature))

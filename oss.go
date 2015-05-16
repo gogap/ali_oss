@@ -23,4 +23,6 @@ type OSS interface {
 	GetObjectURLWithWatermark(domain, bucketName, objectName, watermark string) (URL string)
 	//获取object list
 	GetBucket(filter map[string]string, bucketName, location string) (result parser.ListBucketResult, err error)
+	//获取无签名地址
+	GetObjectBasicURL(location, bucketName, objectName string) (URL string)
 }
