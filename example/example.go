@@ -83,10 +83,10 @@ func getObject() {
 	//fmt.Println("proportion object url:", proportion)
 
 	//get default watermark url
-	//watermark := cli.GetObjectURLWithWatermark(cfg.Domain, cfg.BucketName, "testdata/test1", "日日进")
-	//fmt.Println("default watermark url:", watermark)
+	watermark := cli.GetObjectURLWithWatermark(cfg.Domain, cfg.BucketName, "testdata/test1", "日日进")
+	fmt.Println("default watermark url:", watermark)
 
-	fmt.Println(cli.GetObjectBasicURL(cfg.Location, cfg.BucketName, "testdata/test1"))
+	//fmt.Println(cli.GetObjectBasicURL(cfg.Location, cfg.BucketName, "testdata/test1"))
 }
 
 type config struct {

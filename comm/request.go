@@ -39,10 +39,12 @@ func (p *request) Request(method, target string, header map[string]string, conte
 		return
 	}
 
-	if resp.StatusCode == 200 && len(data) > 0 {
-		err = xml.Unmarshal(data, &result)
-		if err != nil {
-			return
+	if resp.StatusCode == 200 {
+		if len(data) > 0 {
+			err = xml.Unmarshal(data, &result)
+			if err != nil {
+				return
+			}
 		}
 	} else {
 		err = errors.New(string(data))
