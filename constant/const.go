@@ -25,16 +25,16 @@ const (
 
 const (
 	TPL_OBJECT_URL               = "http://%s.oss-cn-%s.aliyuncs.com/%s?Expires=%d&OSSAccessKeyId=%s&Signature=%s"
-	TPL_STATIC_WIDTH_OBJECT_URL  = "http://%s/%s%s%dw.jpg?Expires=%d&OSSAccessKeyId=%s&Signature=%s"
+	TPL_STATIC_WIDTH_OBJECT_URL  = "https://%s/%s%s%dw.jpg?Expires=%d&OSSAccessKeyId=%s&Signature=%s"
 	TPL_STATIC_WIDTH_OBJECT      = "%s@%dw.jpg"
-	TPL_STATIC_HEIGHT_OBJECT_URL = "http://%s/%s%s%dh.jpg?Expires=%d&OSSAccessKeyId=%s&Signature=%s"
+	TPL_STATIC_HEIGHT_OBJECT_URL = "https://%s/%s%s%dh.jpg?Expires=%d&OSSAccessKeyId=%s&Signature=%s"
 	TPL_STATIC_HEIGHT_OBJECT     = "%s@%dh.jpg"
-	TPL_DYNAMIC_OBJECT_URL       = "http://%s/%s%s%dw_%dh.jpg?Expires=%d&OSSAccessKeyId=%s&Signature=%s"
+	TPL_DYNAMIC_OBJECT_URL       = "https://%s/%s%s%dw_%dh.jpg?Expires=%d&OSSAccessKeyId=%s&Signature=%s"
 	TPL_DYNAMIC_OBJEC            = "%s@%dw_%dh.jpg"
-	TPL_PROPORTION_OBJECT_URL    = "http://%s/%s%s%dp.jpg?Expires=%d&OSSAccessKeyId=%s&Signature=%s"
+	TPL_PROPORTION_OBJECT_URL    = "https://%s/%s%s%dp.jpg?Expires=%d&OSSAccessKeyId=%s&Signature=%s"
 	TPL_PROPORTION_OBJECT        = "%s@%dp.jpg"
 
-	TPL_OBJECT_WITH_WATERMARK_URL = "http://%s/%s?Expires=%d&OSSAccessKeyId=%s&Signature=%s"
+	TPL_OBJECT_WITH_WATERMARK_URL = "https://%s/%s?Expires=%d&OSSAccessKeyId=%s&Signature=%s"
 )
 
 const (
